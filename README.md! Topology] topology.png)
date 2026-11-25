@@ -1,0 +1,49 @@
+# small-business-network-packet-tracer
+Packet Tracer lab: VLANs, router-on-a-stick, DHCP, NAT and ACL
+# Small Office Network in Packet Tracer
+
+I built a small office network from scratch: four VLANs, one router, one switch, a pretend ISP, and a rule that keeps Sales out of the server room. It took a few typos and one very empty NAT table, but it works.
+
+![Topology](screenshots/topology.png)
+
+## The setup
+
+| VLAN | Name | Subnet | Gateway |
+|---|---|---|---|
+| 10 | STAFF | 192.168.10.0/24 | 192.168.10.1 |
+| 20 | SALES | 192.168.20.0/24 | 192.168.20.1 |
+| 30 | SERVERS | 192.168.30.0/24 | 192.168.30.1 |
+| 99 | MGMT | 192.168.99.0/24 | 192.168.99.1 |
+
+The ISP link is 203.0.113.0/30 (R1 is .1, ISP is .2), and a loopback of 8.8.8.8 on the ISP router plays the part of the internet.
+
+## What it does
+
+- One trunk carries all VLANs from the switch to R1, which routes between them (router on a stick).
+- DHCP hands out addresses to Staff and Sales. The server keeps a fixed one (192.168.30.10).
+- A default route plus NAT overload lets every private address share R1's single public one.
+- An ACL blocks Sales from the server subnet but lets them online.
+- [Add any security you really configured, such as SSH or port security.]
+
+## Proof it works
+
+- Staff PC to server: works
+- Staff PC to 8.8.8.8: works
+- Sales PC to server: [blocked / fill in]
+- Sales PC to 8.8.8.8: [works / fill in]
+
+![NAT translations](screenshots/nat-translations.png)
+
+## Where I got stuck
+
+- **Interface names.** I guessed FastEthernet, but my router had Gigabit ports. `show ip interface brief` settled it.
+- **`oustide`.** The router rejected my typo, and the error pointed straight at it.
+- **An empty NAT table.** NAT entries only exist while traffic flows, so a continuous ping (`ping -t 8.8.8.8`) fixed my test.
+
+## Files
+
+`network-lab.pkt`, `configs/` (passwords removed) and `screenshots/`.
+
+## Next
+
+[One thing you actually want to try, like a second switch, wireless, or a web server.]
